@@ -23,7 +23,7 @@ fn main() {
      {
         break;
     }
-    println!("{}: command not found",input);
+    println!("{}: command not found",input.trim());
 
     input.clear()
    
