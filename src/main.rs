@@ -19,11 +19,13 @@ fn main() {
 
   
     io::stdin().read_line(&mut input).unwrap();
-    if input.trim()==built_in
+
+    let command = input.trim();
+    if command==built_in
      {
         break;
     }
-    println!("{}: command not found",input.trim());
+    println!("{}: command not found",command);
 
     input.clear()
    
