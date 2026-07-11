@@ -5,7 +5,7 @@ fn main() {
     // TODO: Uncomment the code below to pass the first stage
     //to take input
   
-
+     loop{
     //use Reciving user input
     print!("$ ");
     io::stdout().flush().unwrap();
@@ -14,4 +14,5 @@ fn main() {
     let mut input= String::new();
     io::stdin().read_line(&mut input).unwrap();
     println!("{}: command not found ",input.trim());
+}
 }
