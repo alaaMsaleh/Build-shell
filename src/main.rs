@@ -7,7 +7,7 @@ fn main() {
   
 
     //use Reciving user input
-    print!("$");
+    print!("$ ");
     io::stdout().flush().unwrap();
 
 
