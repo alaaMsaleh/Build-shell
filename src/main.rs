@@ -5,7 +5,7 @@ fn main() {
     // TODO: Uncomment the code below to pass the first stage
     //to take input
   
-   let built_in="exit\n";
+   let built_in="exit";
    let mut input= String::new();
      loop{
     //use Reciving user input
@@ -19,13 +19,13 @@ fn main() {
 
   
     io::stdin().read_line(&mut input).unwrap();
-    if input==built_in
+    if input.trim()==built_in
      {
         break;
     }
-    println!("{}: command not found ",input.trim());
+    println!("{}: command not found",input);
 
-    input.clear();
+    input.clear()
    
 }
 }
