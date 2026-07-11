@@ -5,13 +5,11 @@ fn main() {
     // TODO: Uncomment the code below to pass the first stage
     //to take input
   
-   let built_in="exit";
+   
    let mut input= String::new();
      loop{
     //use Reciving user input
  
-
-    
    
     print!("$ ");
     io::stdout().flush().unwrap();
@@ -20,14 +18,19 @@ fn main() {
   
     io::stdin().read_line(&mut input).unwrap();
 
-    let command = input.trim();
-    if command==built_in
+    let command = input.trim().to_string();
+    if command=="exit"
      {
         break;
     }
+    else if command.starts_with("echo"){
+        
+        println!("{}",&command[5..]);
+    }else{
     println!("{}: command not found",command);
-
+    }
     input.clear()
+
    
 }
 }
