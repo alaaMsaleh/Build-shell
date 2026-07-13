@@ -28,7 +28,7 @@ fn main() {
        text if text.starts_with("echo")
         =>{ println!("{}",&command[5..])},
         text if text.starts_with("type")=>determin_type(&command[5..]) ,
-        _=> println!("{} :command not found",command)
+        _=> println!("{}: command not found",command)
     }
 
     fn determin_type(x : &str){
