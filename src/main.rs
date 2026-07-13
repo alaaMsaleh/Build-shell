@@ -25,11 +25,20 @@ fn main() {
 
         "exit" =>break,
         //anonumes condetion
-       text if text.starts_with("echo") =>{
-            println!("{}",&command[5..])
-        }
-    ,
+       text if text.starts_with("echo")
+        =>{ println!("{}",&command[5..])},
+        text if text.starts_with("type")=>determin_type(&command[5..]) ,
         _=> println!("{}: command not found",command)
+    }
+
+    fn determin_type(x : &str){
+        
+        // ireplace if with match bec natch suport OR
+       match x {
+        "echo"|"exit"|"type"=>println!("{x} is a shell builtin"),
+        _=>println!("{x} Not found"),
+
+       }
     }
     // if command=="exit"
     //  {

@@ -1,0 +1,21 @@
+A binary operation was attempted on a type which doesn't support it.
+
+Erroneous code example:
+
+[95mlet[0m[2m[97m [0mx[2m[97m [0m[2m[97m=[0m[2m[97m [0m[91m12f32[0m[2m[97m;[0m[2m[97m [0m[2m[97m// error: binary operation `<<` cannot be applied to[0m[2m[97m
+               [0m[2m[97m//        type `f32`[0m[2m[97m
+
+[0mx[2m[97m [0m[2m[97m<[0m[2m[97m<[0m[2m[97m [0m[91m2[0m[2m[97m;[0m
+
+To fix this error, please check that this type implements this binary operation. Example:
+
+[95mlet[0m[2m[97m [0mx[2m[97m [0m[2m[97m=[0m[2m[97m [0m[91m12u32[0m[2m[97m;[0m[2m[97m [0m[2m[97m// the `u32` type does implement it:[0m[2m[97m
+               [0m[2m[97m// https://doc.rust-lang.org/stable/std/ops/trait.Shl.html[0m[2m[97m
+
+[0mx[2m[97m [0m[2m[97m<[0m[2m[97m<[0m[2m[97m [0m[91m2[0m[2m[97m;[0m[2m[97m [0m[2m[97m// ok![0m
+
+It is also possible to overload most operators for your own type by implementing traits from [2mstd::ops[0m.
+
+String concatenation appends the string on the right to the string on the left and may require reallocation. This requires ownership of the
+string on the left. If something should be added to a string literal, move the literal to the heap by allocating it with [2mto_owned()[0m like in [2m"Your
+text".to_owned()[0m.
