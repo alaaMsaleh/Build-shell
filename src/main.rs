@@ -36,7 +36,7 @@ fn main() {
         // ireplace if with match bec natch suport OR
        match x {
         "echo"|"exit"|"type"=>println!("{x} is a shell builtin"),
-        _=>println!("{x}: not found"),
+        _=>println!("{x}: command not found"),
 
        }
     }
