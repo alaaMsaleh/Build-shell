@@ -48,6 +48,7 @@ fn determin_path(comm: &str) -> Option<String> {
         let  parts = std::env::split_paths(&path_env);
 
         for z in  parts {
+            eprintln!("DEBUG: Checking folder: {:?}", z);
             let full_path = z.join(comm);
             if full_path.is_file() {
                 return Some(full_path.to_string_lossy().to_string());
