@@ -1,6 +1,7 @@
 
 #[allow(unused_imports)]
 use std::io::{self, Write};
+use std::os::unix::fs::PermissionsExt;
 
 fn main() {
     // TODO: Uncomment the code below to pass the first stage
@@ -51,7 +52,13 @@ fn determin_path(comm: &str) -> Option<String> {
           
             let full_path = z.join(comm);
             if full_path.is_file() {
-                return Some(full_path.to_string_lossy().to_string());
+                if let Ok(metadata) = full_path.metadata() {
+                    let permissions = metadata.permissions();
+                    // 0o111 للـ Unix تتأكد أن أحد خانات الـ Execute مفعّلة
+                    if permissions.mode() & 0o111 != 0 {
+                        return Some(full_path.to_string_lossy().to_string());
+                    }
+                }
             }
            
 
