@@ -48,15 +48,19 @@ fn determin_path(comm: &str) -> Option<String> {
         let  parts = std::env::split_paths(&path_env);
 
         for z in  parts {
-            eprintln!("DEBUG: Checking folder: {:?}", z);
+          
             let full_path = z.join(comm);
             if full_path.is_file() {
-                return Some(full_path.to_string_lossy().to_string());
+                if let Ok(metadata) = full_path.metadata() {
+                    let permissions = metadata.permissions();
+                    // 3. في أنظمة Unix، القيمة 0o111 تعني أن الملف قابل للتشغيل (executable)
+                    if permissions.mode() & 0o111 != 0 {
+                        return Some(full_path.to_string_lossy().to_string());
             }
-           
+        }
 
         }
-    }
+    }}
     None
 }
 
