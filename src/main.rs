@@ -1,57 +1,70 @@
+
 #[allow(unused_imports)]
 use std::io::{self, Write};
 
 fn main() {
     // TODO: Uncomment the code below to pass the first stage
     //to take input
-   
-   
-   let mut input= String::new();
-     loop{
-    //use Reciving user input
- 
-   
-    print!("$ ");
-    io::stdout().flush().unwrap();
 
+    let mut input = String::new();
 
-  
-    io::stdin().read_line(&mut input).unwrap();
+    loop {
+        //use Reciving user input
 
-    let command = input.trim().to_string();
+        print!("$ ");
+        io::stdout().flush().unwrap();
 
-   
-    match command.as_str(){
+        io::stdin().read_line(&mut input).unwrap();
 
-        "exit" =>break,
-        //anonumes condetion
-       text if text.starts_with("echo")
-        =>{ println!("{}",&command[5..])},
-        text if text.starts_with("type")=>determin_type(&command[5..]) ,
-        _=> println!("{}: command not found",command)
+        let command = input.trim().to_string();
+
+        match command.as_str() {
+            "exit" => break,
+            //anonumes condetion
+            text if text.starts_with("echo") => {
+                println!("{}", &command[5..])
+            }
+            text if text.starts_with("type") => determin_type(&command[5..]),
+            _ => println!("{}: command not found", command),
+        }
+        input.clear()
     }
+}
 
-    fn determin_type(x : &str){
-        
-        // ireplace if with match bec natch suport OR
-       match x {
-        "echo"|"exit"|"type"=>println!("{x} is a shell builtin"),
-        _=>println!("{x}: not found"),
+fn determin_type(x: &str) {
+    // ireplace if with match bec natch suport OR
+    match x {
+        "echo" | "exit" | "type" => println!("{x} is a shell builtin"),
 
-       }
+        _ => match determin_path(x) {
+            Some(path) => println!("{} is {}", x, path),
+            None => println!("{}: not found", x),
+        },
     }
-    // if command=="exit"
-    //  {
-    //     break;
-    // }
-    // else if command.starts_with("echo"){
-        
-    //     println!("{}",&command[5..]);
-    // }else{
-    // println!("{}: command not found",command);
-    // }
-    input.clear()
+}
 
-   
+fn determin_path(comm: &str) -> Option<String> {
+    if let Ok(path_env) = std::env::var("PATH") {
+        let  parts: Vec<&str> = path_env.split(':').collect();
+
+        for z in  parts {
+            let full_path = std::path::Path::new(z).join(comm);
+            if full_path.is_file() {
+                return Some(full_path.to_string_lossy().to_string());
+            }
+            println!("{}",z);
+        }
+    }
+    None
 }
-}
+
+// if command=="exit"
+//  {
+//     break;
+// }
+// else if command.starts_with("echo"){
+
+//     println!("{}",&command[5..]);
+// }else{
+// println!("{}: command not found",command);
+// }
