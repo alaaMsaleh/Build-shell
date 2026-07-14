@@ -44,16 +44,16 @@ fn determin_type(x: &str) {
 }
 
 fn determin_path(comm: &str) -> Option<String> {
-    if let Ok(path_env) = std::env::var("PATH") {
-        let  parts: Vec<&str> = path_env.split(':').collect();
+    if let Some(path_env) = std::env::var_os("PATH") {
+        let  parts = std::env::split_paths(&path_env);
 
         for z in  parts {
-            let full_path = std::path::Path::new(z).join(comm);
+            let full_path = z.join(comm);
             if full_path.is_file() {
                 return Some(full_path.to_string_lossy().to_string());
             }
            
-           
+
         }
     }
     None
