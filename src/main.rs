@@ -52,7 +52,8 @@ fn determin_path(comm: &str) -> Option<String> {
             if full_path.is_file() {
                 return Some(full_path.to_string_lossy().to_string());
             }
-            println!("{}",z);
+           
+           
         }
     }
     None
