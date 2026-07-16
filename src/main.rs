@@ -2,7 +2,7 @@
 #[allow(unused_imports)]
 use std::io::{self, Write};
 use std::{fs::{metadata, Permissions}, os::unix::fs::PermissionsExt};
-
+use std::os::unix::process::CommandExt; 
 fn main() {
     // TODO: Uncomment the code below to pass the first stage
     //to take input
@@ -43,7 +43,7 @@ fn main() {
                 match determin_path(program_name) {
                     Some(full_path) => {
                         // 3. تشغيل البرنامج وتمرير الـ arguments له إذا وجدناه
-                        Run(&full_path, arguments);
+                        Run(&full_path, program_name, arguments);
                     }
                     None => {
                         // 4. إذا لم نجده، نطبع الرسالة الشهيرة
@@ -90,19 +90,18 @@ fn determin_path(comm: &str) -> Option<String> {
     }
     None
 }
-pub  fn Run(program_path : & str, argumment  : &[String]){
+pub fn Run(program_path: &str, program_name: &str, argumment: &[String]) {
+    let mut child = std::process::Command::new(program_path);
+    
+    // الفحص السحري: بنجبر الـ Arg #0 يكون اسم البرنامج المجرد فقط
+    child.arg0(program_name)
+         .args(argumment);
 
-    let  mut child = std::process::Command::new(program_path)
-    .args(argumment)
-    .spawn();
-
-    match child {
+    match child.spawn() {
         Ok(mut child_process) => {
-            // 4. السطر ده مهم جداً: بنقول للـ Shell استني لغاية ما البرنامج الخارجي يخلص
             let _ = child_process.wait();
         }
         Err(e) => {
-            // لو حصل مشكلة أثناء محاولة التشغيل
             eprintln!("Failed to execute process: {}", e);
         }
     }
