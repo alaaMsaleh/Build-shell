@@ -1,8 +1,9 @@
 
+use core::error;
 #[allow(unused_imports)]
 use std::io::{self, Write};
-use std::{fs::{metadata, Permissions}, os::unix::fs::PermissionsExt};
-use std::os::unix::process::CommandExt; 
+use std::{f32::consts::E, fs::{metadata, Permissions}, os::unix::fs::PermissionsExt};
+
 fn main() {
     // TODO: Uncomment the code below to pass the first stage
     //to take input
@@ -30,25 +31,9 @@ fn main() {
                 println!("{}", &command[5..])
             }
             text if text.starts_with("type") => determin_type(&command[5..]),
-            _=>{
-            let parts: Vec<String> = command.split_whitespace().map(|s| s.to_string()).collect();
-                
-                // أول كلمة هي اسم البرنامج (مثلاً my_exe)
-                let program_name = &parts[0];
-                
-                // باقي الكلمات هي الـ arguments (من العنصر رقم 1 لآخر الـ vector)
-                let arguments = &parts[1..];
-
-                // 2. البحث عن البرنامج في الـ PATH
-                match determin_path(program_name) {
-                    Some(full_path) => {
-                        // 3. تشغيل البرنامج وتمرير الـ arguments له إذا وجدناه
-                        Run(&full_path, program_name, arguments);
-                    }
-                    None => {
-                        // 4. إذا لم نجده، نطبع الرسالة الشهيرة
-                        println!("{}: command not found", program_name);
-        }}
+           
+            _ => println!("{}: command not found", command),
+        }
         input.clear()
     }
 }
@@ -90,32 +75,22 @@ fn determin_path(comm: &str) -> Option<String> {
     }
     None
 }
-pub fn Run(program_path: &str, program_name: &str, argumment: &[String]) {
-    let mut child = std::process::Command::new(program_path);
-    
-    // الفحص السحري: بنجبر الـ Arg #0 يكون اسم البرنامج المجرد فقط
-    child.arg0(program_name)
-         .args(argumment);
 
-    match child.spawn() {
-        Ok(mut child_process) => {
-            let _ = child_process.wait();
+fn Run_program(path : &str , arrgument :&str )
+{  
+     let mut child = std::process::Command::new(path)
+     .arg(arrgument).spawn();
+
+    match child{
+        Ok(child) => {
+            println!("Program started!");
+            println!("PID = {:?}", child.id());
+        },
+        Err(err) => {
+            eprintln!("Error: {}", err);
         }
-        Err(e) => {
-            eprintln!("Failed to execute process: {}", e);
-        }
-    }
-}}}
-        
 
- 
-// if command=="exit"
-//  {
-//     break;
-// }
-// else if command.starts_with("echo"){
+  
+}
+}
 
-//     println!("{}",&command[5..]);
-// }else{
-// println!("{}: command not found",command);
-// }
