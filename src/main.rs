@@ -158,7 +158,7 @@ fn parse_input() -> (String, Vec<String>) {
 // دالة فحص الـ Built-in أو البحث في الـ PATH لـ type
 fn determin_type(x: &str) {
     match x {
-        "echo" | "exit" | "type" => println!("{x} is a shell builtin"),
+        "echo" | "exit" | "type" | "pwd" => println!("{x} is a shell builtin"),
 
         _ => match determin_path(x) {
             Some(path) => println!("{} is {}", x, path.display()),
