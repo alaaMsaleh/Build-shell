@@ -94,11 +94,12 @@
 // }
 
 
-use std::env;
+use std::{env, path};
+use std::f32::consts::E;
 use std::io::{self, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
-use std::os::unix::process::CommandExt;
+use std::os::unix::process::{self, CommandExt};
 use std::process::Command;
 
 fn main() {
@@ -125,6 +126,11 @@ fn main() {
                 if let Some(target) = args.first() {
                     determin_type(target);
                 }
+            }
+            "pwd" =>match findcurrent_work_directory(){
+
+                Ok(path) =>println!("{}",path.display()),
+                Err(_) => eprintln!("pwd: error retrieving current directory"),
             }
 
             // لو مش Built-in، بنبحث عنه في الـ PATH ونشغله
@@ -193,3 +199,10 @@ fn executing_process(path: &PathBuf,command :&str, args: &[String]) {
         eprintln!("Failed to execute process: {}", e);
     }
 }
+ 
+fn findcurrent_work_directory()-> Result<PathBuf, std::io::Error>{
+    //Shell(Process) -> Kernal -> Current Work Directory -> return Path
+
+           env::current_dir()
+
+    }
