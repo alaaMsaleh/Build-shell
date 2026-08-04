@@ -98,6 +98,7 @@ use std::env;
 use std::io::{self, Write};
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
+use std::os::unix::process::CommandExt;
 use std::process::Command;
 
 fn main() {
@@ -112,7 +113,7 @@ fn main() {
             continue;
         }
 
-        // 2. المطابقة والتنفيذ
+  
         match command.as_str() {
             "exit" => break,
 
@@ -128,7 +129,7 @@ fn main() {
 
             // لو مش Built-in، بنبحث عنه في الـ PATH ونشغله
             _ => match determin_path(&command) {
-                Some(path) => executing_process(&path, &args),
+                Some(path) => executing_process(&path, &command,&args),
                 None => println!("{}: command not found", command),
             },
         }
@@ -160,7 +161,7 @@ fn determin_type(x: &str) {
     }
 }
 
-// دالة البحث في الـ PATH مع التأكد من صلاحيات التنفيذ (Permissions Check)
+
 fn determin_path(comm: &str) -> Option<PathBuf> {
     if let Some(path_env) = env::var_os("PATH") {
         let parts = env::split_paths(&path_env);
@@ -180,9 +181,15 @@ fn determin_path(comm: &str) -> Option<PathBuf> {
     None
 }
 
-// دالة تشغيل البرامج الخارجية مع الـ Arguments والانتظار
-fn executing_process(path: &PathBuf, args: &[String]) {
-    if let Err(e) = Command::new(path).args(args).status() {
+fn executing_process(path: &PathBuf,command :&str, args: &[String]) {
+
+   let mut cmd = Command::new(path);
+    
+    // نحدد أن arg0 هو اسم الأمر فقط (مثل custom_exe_9822) وليس المسار الكامل
+    cmd.arg0(command);
+    cmd.args(args);
+
+    if let Err(e) = cmd.status() {
         eprintln!("Failed to execute process: {}", e);
     }
 }
