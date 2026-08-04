@@ -155,7 +155,7 @@ fn determin_type(x: &str) {
         "echo" | "exit" | "type" => println!("{x} is a shell builtin"),
 
         _ => match determin_path(x) {
-            Some(path) => println!("{} is {:?}", x, path),
+            Some(path) => println!("{} is {}", x, path.display()),
             None => println!("{}: not found", x),
         },
     }
