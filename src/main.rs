@@ -133,6 +133,21 @@ fn main() {
                 Err(_) => eprintln!("pwd: error retrieving current directory"),
             }
 
+            "cd"=>{
+                //take path by remove cd just take pth use input
+                if let Some(path_str) = command.split_whitespace().nth(1) {
+                    //command is string change to path , bec func paramter take path
+                    let path_buf = PathBuf::from(path_str);
+                    
+                    if let Err(e) = change_directory(path_buf) {
+                        eprintln!("cd failed: {}", e);
+                    }
+                } else {
+                    println!("Please provide a directory path.");
+                }
+            }
+         
+
             // لو مش Built-in، بنبحث عنه في الـ PATH ونشغله
             _ => match determin_path(&command) {
                 Some(path) => executing_process(&path, &command,&args),
@@ -205,4 +220,17 @@ fn findcurrent_work_directory()-> Result<PathBuf, std::io::Error>{
 
            env::current_dir()
 
+    }
+
+    //create func handel cd => change directory
+    fn change_directory(path:PathBuf) -> Result<(), std::io::Error>
+    {
+        //check path is work
+      if !path.is_dir(){
+        return Err(io::Error::new(io::ErrorKind::NotFound, "Not a valid directory"));
+    }
+    env::set_current_dir(path)?;
+
+   
+    Ok(())
     }
