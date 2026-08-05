@@ -228,6 +228,8 @@ fn findcurrent_work_directory()-> Result<PathBuf, std::io::Error>{
         //check path is work
       if !path.is_dir(){
         return Err(io::Error::new(io::ErrorKind::NotFound, "Not a valid directory"));
+    } else if(path.starts_with("~")){
+        env::home_dir();
     }
     env::set_current_dir(path)?;
 
