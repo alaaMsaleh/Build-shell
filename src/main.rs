@@ -135,12 +135,12 @@ fn main() {
 
             "cd"=>{
                 //take path by remove cd just take pth use input
-                if let Some(path_str) = command.split_whitespace().nth(1) {
+                if let Some(path_str) = args.first() {
                     //command is string change to path , bec func paramter take path
                     let path_buf = PathBuf::from(path_str);
                     
-                    if let Err(e) = change_directory(path_buf) {
-                        eprintln!("cd failed: {}", e);
+                    if let Err(_) = change_directory(path_buf) {
+                        eprintln!("cd: {}: No such file or directory", path_str);
                     }
                 } else {
                     println!("Please provide a directory path.");
