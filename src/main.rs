@@ -94,16 +94,12 @@
 // }
 
 
-use std::{env, path};
-use std::f32::consts::E;
-use std::io::{self, Write};
+use std::env;
+use std::io::{self, Error, ErrorKind, Write};
 use std::os::unix::fs::PermissionsExt;
-
-use std::os::unix::process::{self, CommandExt};
-use std::process::Command;
-use std::io::{self, Error, ErrorKind};
+use std::os::unix::process::CommandExt;
 use std::path::{Path, PathBuf};
-
+use std::process::Command;
 fn main() {
     loop {
         print!("$ ");
@@ -171,7 +167,7 @@ fn parse_input() -> (String, Vec<String>) {
 // دالة فحص الـ Built-in أو البحث في الـ PATH لـ type
 fn determin_type(x: &str) {
     match x {
-        "echo" | "exit" | "type" | "pwd" => println!("{x} is a shell builtin"),
+        "echo" | "exit" | "type" | "pwd" |"cd" => println!("{x} is a shell builtin"),
 
         _ => match determin_path(x) {
             Some(path) => println!("{} is {}", x, path.display()),
