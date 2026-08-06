@@ -98,9 +98,11 @@ use std::{env, path};
 use std::f32::consts::E;
 use std::io::{self, Write};
 use std::os::unix::fs::PermissionsExt;
-use std::path::PathBuf;
+
 use std::os::unix::process::{self, CommandExt};
 use std::process::Command;
+use std::io::{self, Error, ErrorKind};
+use std::path::{Path, PathBuf};
 
 fn main() {
     loop {
@@ -135,15 +137,11 @@ fn main() {
 
             "cd"=>{
                 //take path by remove cd just take pth use input
-                if let Some(path_str) = args.first() {
-                    //command is string change to path , bec func paramter take path
-                    let path_buf = PathBuf::from(path_str);
-                    
-                    if let Err(_) = change_directory(path_buf) {
-                        eprintln!("cd: {}: No such file or directory", path_str);
-                    }
-                } else {
-                    println!("Please provide a directory path.");
+                let path_str = args.first().map(|s| s.as_str()).unwrap_or("~");
+                let path_buf = PathBuf::from(path_str);
+            
+                if let Err(_) = change_directory(path_buf) {
+                    eprintln!("cd: {}: No such file or directory", path_str);
                 }
             }
          
@@ -223,16 +221,38 @@ fn findcurrent_work_directory()-> Result<PathBuf, std::io::Error>{
     }
 
     //create func handel cd => change directory
-    fn change_directory(path:PathBuf) -> Result<(), std::io::Error>
-    {
-        //check path is work
-      if !path.is_dir(){
-        return Err(io::Error::new(io::ErrorKind::NotFound, "Not a valid directory"));
-    } else if(path.starts_with("~")){
-        env::home_dir();
+    pub fn change_directory(path: PathBuf) -> Result<(), io::Error> {
+        // 1. Resolve the path (Expand ~ if needed)
+        let expanded_path = expand_tilde(&path)?;
+    
+        // 2. Delegate the actual directory change and validation to the OS via std::env
+        // set_current_dir automatically checks existence, directory status, and permissions.
+        env::set_current_dir(expanded_path)
     }
-    env::set_current_dir(path)?;
-
-   
-    Ok(())
+    
+    /// Helper function responsible strictly for tilde expansion.
+    /// Keeps separation of concerns clean.
+    fn expand_tilde(path: &Path) -> Result<PathBuf, io::Error> {
+        // 1. التشييك لو المسار هو "~" أو يبدأ بـ "~/"
+        if path == Path::new("~") || path.starts_with("~/") {
+            let home_dir = env::var("HOME").map_err(|_| {
+                Error::new(
+                    ErrorKind::NotFound,
+                    "HOME environment variable is not set",
+                )
+            })?;
+    
+            // لو المسار هو "~" فقط
+            if path == Path::new("~") {
+                return Ok(PathBuf::from(home_dir));
+            }
+    
+            // لو المسار مثلاً "~/desktop"
+            if let Ok(relative_path) = path.strip_prefix("~/") {
+                return Ok(PathBuf::from(home_dir).join(relative_path));
+            }
+        }
+    
+        // المسارات العادية
+        Ok(path.to_path_buf())
     }
