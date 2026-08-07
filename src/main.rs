@@ -177,17 +177,21 @@ fn parse_input_qouting() -> (String, Vec<String>) {
     let mut current_arg = String::new();
 
     //remove \n or \r\n in input
-    let trimmed_input = input.trim_end();
+    let trimmed_input = input.trim_end(); //echo 'hello world'
 
     let mut in_single_quote = false;
+    let mut in_double_quote = false;
 
     for ch in  trimmed_input.chars(){
         match ch {
-            '\'' => {
+            '\'' if !in_double_quote => {
                 in_single_quote = !in_single_quote;
             }
+            '"' if !in_single_quote => {
+                in_double_quote = !in_double_quote;
+            }
 
-            ' ' if !in_single_quote => {
+            ' ' if !in_single_quote && !in_double_quote => {
                 if !current_arg.is_empty() {
                     args.push(current_arg.clone());
                     current_arg.clear();
