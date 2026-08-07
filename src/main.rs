@@ -105,12 +105,28 @@ fn main() {
         print!("$ ");
         io::stdout().flush().unwrap();
 
-        // 1. قراءة وتقسيم الـ Input إلى Command و Arguments
-        let (command, args) = parse_input();
+        //Row String
+        let single_qoute =r#"''"#;
+        let double_qoute =r#"''"#;
 
-        if command.is_empty() {
+        /*how terminal work with Qouting
+ 
+        1- frist take Statment input and detemin type of qouting
+        2- then remove and execute command 
+
+
+
+         */
+       
+
+        // frist step at shell
+        let (command, args) = parse_input_qouting();
+
+        if command.is_empty() 
+        {
             continue;
-        }
+        } 
+       
 
   
         match command.as_str() {
@@ -151,18 +167,53 @@ fn main() {
     }
 }
 
-// دالة قراءة الـ Input وتقسيمه لـ Command و Args كـ Tuple
-fn parse_input() -> (String, Vec<String>) {
+// fun to handel input data
+fn parse_input_qouting() -> (String, Vec<String>) {
+
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
 
-    let mut split = input.split_whitespace();
+    let mut args = Vec::new(); //ر
+    let mut current_arg = String::new();
 
-    let command = split.next().unwrap_or("").to_string();
-    let args: Vec<String> = split.map(|s| s.to_string()).collect();
+    //remove \n or \r\n in input
+    let trimmed_input = input.trim_end();
 
+    let mut in_single_quote = false;
+
+    for ch in  trimmed_input.chars(){
+        match ch {
+            '\'' => {
+                in_single_quote = !in_single_quote;
+            }
+
+            ' ' if !in_single_quote => {
+                if !current_arg.is_empty() {
+                    args.push(current_arg.clone());
+                    current_arg.clear();
+                }
+         }
+         _=>{
+            current_arg.push(ch);
+         }
+
+        }
+    }
+
+    if !current_arg.is_empty() {
+        args.push(current_arg);
+    }
+
+    if args.is_empty() {
+        return (String::new(), Vec::new());
+    }
+    
+    let command = args.remove(0); // أول كلمة هي الـ Command
     (command, args)
 }
+//input ech "Hello World" =>(Where arguments start and end) , Instructions to Parser
+
+
 
 // دالة فحص الـ Built-in أو البحث في الـ PATH لـ type
 fn determin_type(x: &str) {
